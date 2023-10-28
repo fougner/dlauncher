@@ -1,4 +1,4 @@
-use gtk::gdk::{Display, Monitor, prelude::*};
+use gtk::gdk::{prelude::*, Display, Monitor};
 use gtk::gio::Settings;
 
 pub fn monitor() -> Monitor {

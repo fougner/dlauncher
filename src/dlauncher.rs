@@ -60,8 +60,8 @@ fn main() {
 
       rx.attach(None, move |msg| {
         if msg {
-          debug!("Received message from dbus interface, showing window.");
-          windows.show_window();
+          debug!("Received message from dbus interface, toggling window.");
+          windows.toggle_window();
         }
 
         Continue(true)

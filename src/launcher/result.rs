@@ -1,6 +1,10 @@
 use gtk::{prelude::*, Builder, EventBox, Image, Label};
 
-use crate::{entry::ResultEntry, fuzzy::{ MatchingBlocks, slice_utf8 }, launcher::window::Window};
+use crate::{
+  entry::ResultEntry,
+  fuzzy::{slice_utf8, MatchingBlocks},
+  launcher::window::Window,
+};
 
 #[derive(Debug, Clone)]
 pub struct ResultWidget {
@@ -35,16 +39,24 @@ impl ResultWidget {
     );
     let close_tag = "</span>";
 
-    let name_c = match_.0
-        .iter()
-        .rev()
-        .fold(entry.name().to_string(), |name_c, (index, chars)| {
-            [slice_utf8(&name_c, 0, *index),
-            &open_tag,
-            &chars,
-            close_tag,
-            slice_utf8(&name_c, *index + chars.chars().count(), name_c.chars().count())].concat()
-    });
+    let name_c = match_
+      .0
+      .iter()
+      .rev()
+      .fold(entry.name().to_string(), |name_c, (index, chars)| {
+        [
+          slice_utf8(&name_c, 0, *index),
+          &open_tag,
+          &chars,
+          close_tag,
+          slice_utf8(
+            &name_c,
+            *index + chars.chars().count(),
+            name_c.chars().count(),
+          ),
+        ]
+        .concat()
+      });
 
     item_name.set_markup(&name_c);
 

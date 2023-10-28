@@ -1,11 +1,11 @@
 use std::sync::{Arc, Mutex};
 
+use gtk::glib::idle_add_local;
 use gtk::{
   gdk::{prelude::*, EventKey},
   prelude::*,
   Builder, Entry, EventBox, ScrolledWindow, Window as GtkWindow,
 };
-use gtk::glib::idle_add_local;
 use log::{debug, error};
 
 use crate::{
@@ -165,6 +165,14 @@ impl Window {
     let y = geo.y() as f32 + geo.height() as f32 * 0.12;
 
     self.window.move_(x as i32, (y + 92_f32) as i32);
+  }
+
+  pub fn toggle_window(&self) {
+    if self.window.is_visible() {
+      self.hide_window();
+    } else {
+      self.show_window();
+    }
   }
 
   /// Show the GTK window, and refresh the apps and recents.

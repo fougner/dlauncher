@@ -1,6 +1,7 @@
 use std::sync::{Arc, Mutex};
 
-use gtk::glib::idle_add_local;
+use dbus::arg::RefArg;
+use gtk::glib::{idle_add_local, ControlFlow, Propagation};
 use gtk::{
   gdk::{prelude::*, EventKey},
   prelude::*,
@@ -8,6 +9,8 @@ use gtk::{
 };
 use log::{debug, error};
 
+use crate::entry::calc_entry::CalcEntry;
+use crate::fuzzy::get_matching_blocks;
 use crate::{
   entry::{app_entry::AppEntry, script_entry::ScriptEntry, ResultEntry},
   extension::{Extension, ExtensionExitCode},
@@ -76,7 +79,9 @@ impl Window {
       .object("dlauncher_window")
       .expect("Couldn't get window");
 
-    let visual = window.screen().unwrap().rgba_visual();
+    let visual = gtk::prelude::GtkWindowExt::screen(&window)
+      .unwrap()
+      .rgba_visual();
     if let Some(visual) = visual {
       window.set_visual(Some(&visual));
     }
@@ -119,7 +124,7 @@ impl Window {
       .unwrap();
 
     gtk::StyleContext::add_provider_for_screen(
-      &self.window.screen().unwrap(),
+      &gtk::prelude::GtkWindowExt::screen(&self.window).unwrap(),
       &provider,
       gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
     );
@@ -208,7 +213,7 @@ impl Window {
       drop(apps);
       drop(recents);
 
-      Continue(false)
+      ControlFlow::Break
     });
   }
 
@@ -350,7 +355,7 @@ impl Window {
     }
   }
 
-  fn connect_key_press_event(&self, key: &EventKey) -> Inhibit {
+  fn connect_key_press_event(&self, key: &EventKey) -> Propagation {
     let mut navigation = self.navigation.lock().unwrap();
     let input: Entry = self.builder.object("input").expect("Couldn't get input");
 
@@ -391,7 +396,7 @@ impl Window {
     }
 
     input.grab_focus_without_selecting();
-    Inhibit(false)
+    Propagation::Proceed
   }
 
   fn connect_changed(&self, input: &Entry) {
@@ -410,6 +415,16 @@ impl Window {
         if let Some((match_, score)) = matches_app(app, text, self.config.main.least_score) {
           unsort.push((ResultEntry::App(app.clone()), self.clone(), match_, score));
         }
+      }
+
+      let mut ns = fasteval::EmptyNamespace;
+      if let Ok(evaluated) = fasteval::ez_eval(text, &mut ns) {
+        debug!("Ok mathresult {}: {}", text, evaluated);
+        let entry = ResultEntry::Calc(CalcEntry::new_from_result(text.to_string(), evaluated));
+        let res = evaluated.to_string();
+        let res = res.as_str();
+        let match_ = get_matching_blocks(res, res);
+        unsort.push((entry, self.clone(), match_, 1000));
       }
 
       for script in self.state.scripts.iter() {
@@ -467,7 +482,7 @@ impl Window {
       if th.config.launcher.hide_on_focus_lost {
         win.hide();
       }
-      Inhibit(false)
+      Propagation::Proceed
     });
 
     let th = self.clone();

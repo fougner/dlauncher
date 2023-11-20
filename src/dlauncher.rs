@@ -12,6 +12,7 @@ use dlauncher::{
   util::init_logger,
 };
 
+static PKG_VERSION: &str = env!("CARGO_PKG_VERSION");
 fn main() {
   init_logger();
   debug!("Starting dlauncher...");
@@ -22,7 +23,7 @@ fn main() {
   application.connect_activate(move |application| {
     let windows = Window::new(application, &config);
     windows.build_ui();
-    info!("Started dlauncher");
+    info!("Started dlauncher v{PKG_VERSION}");
 
     if !config.main.daemon {
       // skip initializing a dbus interface if daemon isn't enabled & show window
@@ -31,7 +32,7 @@ fn main() {
     } else {
       debug!("Starting dbus interface");
       let (tx, rx): (Sender<bool>, Receiver<bool>) =
-        glib::MainContext::channel(glib::PRIORITY_DEFAULT);
+        glib::MainContext::channel(glib::Priority::DEFAULT);
 
       std::thread::spawn(move || {
         let c = Connection::new_session().unwrap();
@@ -64,7 +65,7 @@ fn main() {
           windows.toggle_window();
         }
 
-        Continue(true)
+        glib::ControlFlow::Continue
       });
     };
   });

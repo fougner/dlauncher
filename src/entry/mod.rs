@@ -9,6 +9,7 @@ use crate::{
 };
 
 pub mod app_entry;
+pub mod calc_entry;
 pub mod extension_entry;
 pub mod script_entry;
 
@@ -17,6 +18,7 @@ pub enum ResultEntry {
   App(app_entry::AppEntry),
   Extension(extension_entry::ExtensionEntry),
   Script(script_entry::ScriptEntry),
+  Calc(calc_entry::CalcEntry),
   None,
 }
 
@@ -26,6 +28,7 @@ impl ResultEntry {
       ResultEntry::App(app) => &app.name,
       ResultEntry::Extension(ext) => &ext.name,
       ResultEntry::Script(script) => script.name(),
+      ResultEntry::Calc(calc) => calc.name(),
       ResultEntry::None => "No results",
     }
   }
@@ -35,6 +38,7 @@ impl ResultEntry {
       ResultEntry::App(app) => &app.description,
       ResultEntry::Extension(ext) => &ext.description,
       ResultEntry::Script(script) => script.desc(),
+      ResultEntry::Calc(calc) => calc.desc(),
       ResultEntry::None => "No results found.",
     }
   }
@@ -44,6 +48,7 @@ impl ResultEntry {
       ResultEntry::App(app) => app.icon(),
       ResultEntry::Extension(ext) => ext.icon(),
       ResultEntry::Script(script) => script.icon(),
+      ResultEntry::Calc(calc) => default_pixbuf(40),
       ResultEntry::None => default_pixbuf(40),
     }
   }
@@ -63,6 +68,7 @@ impl ResultEntry {
         }
       }
       ResultEntry::Script(script) => script.run(),
+      ResultEntry::Calc(_) => (),
       ResultEntry::None => (),
     }
   }

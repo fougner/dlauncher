@@ -1,4 +1,4 @@
-use gtk::{prelude::*, Builder, EventBox, Image, Label};
+use gtk::{glib::Propagation::Proceed, prelude::*, Builder, EventBox, Image, Label};
 
 use crate::{
   entry::ResultEntry,
@@ -97,7 +97,7 @@ impl ResultWidget {
         navigation.select(result_notify.index);
       }
 
-      Inhibit(false)
+      Proceed
     });
 
     let result_button = self.clone();
@@ -118,7 +118,7 @@ impl ResultWidget {
         }
       }
 
-      Inhibit(false)
+      Proceed
     });
   }
 }

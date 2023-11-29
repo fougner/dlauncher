@@ -48,7 +48,7 @@ impl ResultEntry {
       ResultEntry::App(app) => app.icon(),
       ResultEntry::Extension(ext) => ext.icon(),
       ResultEntry::Script(script) => script.icon(),
-      ResultEntry::Calc(calc) => default_pixbuf(40),
+      ResultEntry::Calc(_) => default_pixbuf(40),
       ResultEntry::None => default_pixbuf(40),
     }
   }

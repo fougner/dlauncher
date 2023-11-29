@@ -1,11 +1,10 @@
 use gtk::{
-  gdk_pixbuf::{Pixbuf, PixbufLoader},
+  gdk_pixbuf::Pixbuf,
   prelude::*,
 };
 
 use crate::{
   launcher::util::icon::load_icon,
-  script::{Script, ScriptIcon},
 };
 
 #[derive(Debug, Clone)]

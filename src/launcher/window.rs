@@ -1,6 +1,5 @@
 use std::sync::{Arc, Mutex};
 
-use dbus::arg::RefArg;
 use gtk::glib::{idle_add_local, ControlFlow, Propagation};
 use gtk::{
   gdk::{prelude::*, EventKey},

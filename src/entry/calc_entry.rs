@@ -1,11 +1,9 @@
 use gtk::{
-  gdk_pixbuf::Pixbuf,
+  gdk_pixbuf::{Pixbuf, PixbufLoader},
   prelude::*,
 };
 
-use crate::{
-  launcher::util::icon::load_icon,
-};
+use crate::launcher::util::icon::load_icon;
 
 #[derive(Debug, Clone)]
 pub struct CalcEntry {
@@ -17,6 +15,8 @@ pub struct Calc {
   pub query: String,
   pub result: String,
 }
+
+static CALC_IMG: &str = include_str!("../../data/icons/calculator.xpm");
 
 impl CalcEntry {
   pub fn new(calc: Calc) -> Self {
@@ -40,6 +40,13 @@ impl CalcEntry {
   }
 
   pub fn icon(&self) -> Pixbuf {
-    load_icon("org.gnome.Calculator", 40)
+    let loader = PixbufLoader::new();
+    loader.write(CALC_IMG.as_bytes()).unwrap();
+    loader.close().unwrap();
+    loader
+      .pixbuf()
+      .unwrap()
+      .scale_simple(40, 40, gtk::gdk_pixbuf::InterpType::Bilinear)
+      .unwrap()
   }
 }

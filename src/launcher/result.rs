@@ -1,4 +1,4 @@
-use gtk::{glib::Propagation::Proceed, prelude::*, Builder, EventBox, Image, Label};
+use gtk::{glib::Propagation::Proceed, prelude::*, Builder, Box as GtkBox, Image, Label};
 
 use crate::{
   entry::ResultEntry,
@@ -78,18 +78,18 @@ impl ResultWidget {
 
   pub fn select(&mut self) {
     self.selected = true;
-    let item_box: EventBox = self.builder.object("item-box").unwrap();
+    let item_box: GtkBox = self.builder.object("item-box").unwrap();
     item_box.style_context().add_class("selected");
   }
 
   pub fn deselect(&mut self) {
     self.selected = false;
-    let item_box: EventBox = self.builder.object("item-box").unwrap();
+    let item_box: GtkBox = self.builder.object("item-box").unwrap();
     item_box.style_context().remove_class("selected");
   }
 
   pub fn setup(&self) {
-    let item_box: EventBox = self.builder.object("item-box").unwrap();
+    let item_box: GtkBox = self.builder.object("item-box").unwrap();
     let result_notify = self.clone();
     item_box.connect_enter_notify_event(move |_, e| {
       if e.time() != 0 {

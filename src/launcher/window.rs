@@ -4,7 +4,7 @@ use gtk::glib::{idle_add_local, ControlFlow, Propagation};
 use gtk::{
   gdk::{prelude::*, EventKey},
   prelude::*,
-  Builder, Entry, EventBox, ScrolledWindow, Window as GtkWindow,
+  Builder, Entry, Box as GtkBox, ScrolledWindow, Window as GtkWindow,
 };
 use log::{debug, error};
 
@@ -291,7 +291,7 @@ impl Window {
       .object("result_box")
       .expect("Couldn't get result_box");
 
-    let object: EventBox = result.builder.object("item-frame").unwrap();
+    let object: GtkBox = result.builder.object("item-frame").unwrap();
     result_box.add(&object);
 
     result_box.set_margin_top(3);
@@ -314,7 +314,7 @@ impl Window {
 
     if !apps.is_empty() {
       for app in apps {
-        let object: EventBox = app.builder.object("item-frame").unwrap();
+        let object: GtkBox = app.builder.object("item-frame").unwrap();
         result_box.add(&object);
       }
 

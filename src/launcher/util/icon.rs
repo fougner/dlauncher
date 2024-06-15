@@ -1,30 +1,21 @@
-use gtk::{gdk_pixbuf::Pixbuf, prelude::*, IconLookupFlags, IconTheme};
+use gtk4::{gdk_pixbuf::Pixbuf, prelude::RecentManagerExt, IconLookupFlags, IconTheme, TextDirection};
 
 /// Get a themed icon's specific path on the filesystem.
 pub fn get_icon_path(icon: &str, size: i32) -> String {
-  let icon_theme = IconTheme::default().unwrap();
+  let icon_theme = IconTheme::default();
 
   if icon.starts_with('/') {
     icon.to_string()
-  } else if let Some(themed_icon) = icon_theme.lookup_icon(icon, size, IconLookupFlags::FORCE_SIZE)
+  } else
   {
+
+    /*let themed_icon = icon_theme.lookup_icon(icon,&[&"dialog-question-symbolic"], size,1, TextDirection::None, IconLookupFlags::empty());
     themed_icon
       .filename()
       .unwrap()
       .to_string_lossy()
-      .to_string()
-  } else {
-    icon_theme
-      .lookup_icon(
-        "dialog-question-symbolic",
-        size,
-        IconLookupFlags::FORCE_SIZE,
-      )
-      .unwrap()
-      .filename()
-      .unwrap()
-      .to_string_lossy()
-      .to_string()
+      .to_string()*/
+    String::from("hello")
   }
 }
 

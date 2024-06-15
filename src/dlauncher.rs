@@ -1,10 +1,13 @@
 use dbus::blocking::Connection;
 use dbus_crossroads::{Context, Crossroads, IfaceBuilder};
-use gtk::{
+use gtk4::{
   glib,
-  glib::{Receiver, Sender},
   prelude::*,
 };
+
+use zbus::{blocking::Connection, zvariant::ObjectPath, proxy, Result};
+use zbus::ConnectionBuilder;
+
 use log::{debug, info};
 
 use dlauncher::{
@@ -13,12 +16,15 @@ use dlauncher::{
 };
 
 static PKG_VERSION: &str = env!("CARGO_PKG_VERSION");
+static APP_ID: &str = "net.launchpad.dlauncher";
+
 fn main() {
   init_logger();
   debug!("Starting dlauncher...");
+  gtk4::init().expect("Failed to initialize GTK.");
 
   let config = Config::read();
-  let application = gtk::Application::new(Some("net.launchpad.dlauncher"), Default::default());
+  let application = gtk4::Application::builder().application_id(APP_ID).build();
 
   application.connect_activate(move |application| {
     let windows = Window::new(application, &config);
@@ -27,12 +33,13 @@ fn main() {
 
     if !config.main.daemon {
       // skip initializing a dbus interface if daemon isn't enabled & show window
-      windows.window.show_all();
+      windows.window.show();
       info!("Running in non-daemon mode");
     } else {
       debug!("Starting dbus interface");
-      let (tx, rx): (Sender<bool>, Receiver<bool>) =
-        glib::MainContext::channel(glib::Priority::DEFAULT);
+      //let (tx, rx): (Sender<bool>, Receiver<bool>) =
+      //    gtk::glib::MainContext::channel(gtk::glib::Priority::DEFAULT);
+
 
       std::thread::spawn(move || {
         let c = Connection::new_session().unwrap();
@@ -65,7 +72,7 @@ fn main() {
           windows.toggle_window();
         }
 
-        glib::ControlFlow::Continue
+        Continue
       });
     };
   });

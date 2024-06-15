@@ -1,11 +1,8 @@
 use std::sync::{Arc, Mutex};
 
-use gtk::glib::{idle_add_local, ControlFlow, Propagation};
-use gtk::{
-  gdk::{prelude::*, EventKey},
-  prelude::*,
-  Builder, Entry, Box as GtkBox, ScrolledWindow, Window as GtkWindow,
-};
+use gtk4::glib::{idle_add_local, ControlFlow, Propagation, clone};
+use gtk4::{gdk::{prelude::*}, prelude::*, Builder, Entry, Box as GtkBox, ScrolledWindow, Window as GtkWindow, EventControllerFocus, EventControllerKey, gdk};
+use gtk4::gdk::Display;
 use log::{debug, error};
 
 use crate::entry::calc_entry::CalcEntry;
@@ -21,7 +18,7 @@ use crate::{
       app::App,
       config::Config,
       display::{monitor, scaling_factor},
-      query_history::QueryHistory,
+    query_history::QueryHistory,
       recent::Recent,
     },
   },
@@ -65,7 +62,7 @@ pub struct Result {
 }
 
 impl Window {
-  pub fn new(application: &gtk::Application, config: &Config) -> Self {
+  pub fn new(application: &gtk4::Application, config: &Config) -> Self {
     let apps = Arc::new(Mutex::new(App::all()));
     let recents = Arc::new(Mutex::new(Recent::all(&config.recents())));
     let scripts = Arc::new(Script::all(config));
@@ -77,13 +74,13 @@ impl Window {
     let window: GtkWindow = builder
       .object("dlauncher_window")
       .expect("Couldn't get window");
-
-    let visual = gtk::prelude::GtkWindowExt::screen(&window)
+/* 
+    let visual = gtk4::prelude::GtkWindowExt::screen(&window)
       .unwrap()
       .rgba_visual();
     if let Some(visual) = visual {
       window.set_visual(Some(&visual));
-    }
+    }*/
 
     window.set_application(Some(application));
 
@@ -109,7 +106,7 @@ impl Window {
   }
 
   fn styles(&self) {
-    let provider = gtk::CssProvider::new();
+    let provider = gtk4::CssProvider::new();
     provider
       .load_from_path(
         self
@@ -119,32 +116,40 @@ impl Window {
           .as_os_str()
           .to_str()
           .unwrap(),
-      )
-      .unwrap();
+      );
 
-    gtk::StyleContext::add_provider_for_screen(
-      &gtk::prelude::GtkWindowExt::screen(&self.window).unwrap(),
+    // Add the provider to the default screen
+    gtk4::style_context_add_provider_for_display(
+      &Display::default().expect("Could not connect to a display."),
       &provider,
-      gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+      gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
     );
 
-    gtk::StyleContext::add_provider(
+    /*gtk4::StyleContext::add_provider(
+      &gtk4::prelude::GtkWindowExt::screen(&self.window).unwrap(),
+      &provider,
+      gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
+    );*/
+
+    gtk4::StyleContext::add_provider(
       &self.window.style_context(),
       &provider,
-      gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+      gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
     );
 
-    for child in self.window.children() {
-      gtk::StyleContext::add_provider(
-        &child.style_context(),
+    let mut child = self.window.first_child();
+    while let Some(widget) = child {
+      child = widget.next_sibling();
+      gtk4::StyleContext::add_provider(
+        &widget.style_context(),
         &provider,
-        gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+        gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
       );
     }
 
-    if let Some(visual) = self.window.visual() {
+    /*if let Some(visual) = self.window.visual() {
       self.window.set_visual(Some(&visual));
-    }
+    }*/
   }
 
   fn fix_window_width(&self) {
@@ -165,10 +170,10 @@ impl Window {
       self.builder.object("result_box_scroll_container").unwrap();
     result_box_scroll_container.set_property("max-content-height", max_height as i32);
 
-    let x = geo.width() as f32 * 0.5 - window_width * 0.5 + geo.x() as f32;
-    let y = geo.y() as f32 + geo.height() as f32 * 0.12;
+    let _x = geo.width() as f32 * 0.5 - window_width * 0.5 + geo.x() as f32;
+    let _y = geo.y() as f32 + geo.height() as f32 * 0.12;
 
-    self.window.move_(x as i32, (y + 92_f32) as i32);
+    //self.window.move_(20, 20).expect("failed to move window");
   }
 
   pub fn toggle_window(&self) {
@@ -286,42 +291,42 @@ impl Window {
   }
 
   fn add_one_to_results(&self, result: &ResultWidget) {
-    let result_box: gtk::Box = self
+    let result_box: GtkBox = self
       .builder
       .object("result_box")
       .expect("Couldn't get result_box");
 
     let object: GtkBox = result.builder.object("item-frame").unwrap();
-    result_box.add(&object);
+    result_box.append(&object);
 
     result_box.set_margin_top(3);
     result_box.set_margin_bottom(10);
 
-    let scroll_box: ScrolledWindow = self.builder.object("result_box_scroll_container").unwrap();
-
-    scroll_box.show_all();
+    //let _scroll_box: ScrolledWindow = self.builder.object("result_box_scroll_container").unwrap();
   }
 
   fn add_to_results(&self, apps: &Vec<ResultWidget>) {
-    let result_box: gtk::Box = self
+    let result_box: gtk4::Box = self
       .builder
       .object("result_box")
       .expect("Couldn't get result_box");
 
-    for child in result_box.children() {
-      result_box.remove(&child);
+    let mut child = result_box.first_child();
+    while let Some(widget) = child {
+        child = widget.next_sibling();
+        result_box.remove(&widget);
     }
 
     if !apps.is_empty() {
       for app in apps {
         let object: GtkBox = app.builder.object("item-frame").unwrap();
-        result_box.add(&object);
+        result_box.append(&object);
       }
 
       result_box.set_margin_top(3);
       result_box.set_margin_bottom(10);
 
-      let provider = gtk::CssProvider::new();
+      let provider = gtk4::CssProvider::new();
       provider
         .load_from_path(
           self
@@ -331,34 +336,38 @@ impl Window {
             .as_os_str()
             .to_str()
             .unwrap(),
-        )
-        .unwrap();
+        );
 
-      gtk::StyleContext::add_provider(
+      gtk4::StyleContext::add_provider(
         &result_box.style_context(),
         &provider,
-        gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+        gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
       );
 
-      for child in result_box.children() {
-        gtk::StyleContext::add_provider(
-          &child.style_context(),
+      let mut child = result_box.first_child();
+      while let Some(widget) = child {
+        child = widget.next_sibling();
+        gtk4::StyleContext::add_provider(
+          &widget.style_context(),
           &provider,
-          gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+          gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
         );
       }
 
-      let scroll_box: ScrolledWindow = self.builder.object("result_box_scroll_container").unwrap();
-
-      scroll_box.show_all();
+      //let _scroll_box: ScrolledWindow = self.builder.object("result_box_scroll_container").unwrap();
     }
   }
 
-  fn connect_key_press_event(&self, key: &EventKey) -> Propagation {
+  fn handle_key_press_event(&self,
+    _controller: &EventControllerKey,
+    keyval: gdk::Key,
+    _keycode: u32,
+    _state: gdk::ModifierType,
+  ) -> Propagation {
     let mut navigation = self.navigation.lock().unwrap();
     let input: Entry = self.builder.object("input").expect("Couldn't get input");
 
-    if let Some(keycode) = key.keyval().name() {
+    if let Some(keycode) = keyval.name() {
       let keycode = keycode.to_string();
       let custom = self.config.keybinds();
 
@@ -473,21 +482,24 @@ impl Window {
     }
 
     let input: Entry = self.builder.object("input").expect("Couldn't get input");
-    let body: gtk::Box = self.builder.object("body").unwrap();
+    let body: gtk4::Box = self.builder.object("body").unwrap();
     body.style_context().add_class("no-window-shadow");
-
-    let th = self.clone();
-    self.window.connect_focus_out_event(move |win, _| {
-      if th.config.launcher.hide_on_focus_lost {
-        win.hide();
+    let w = self.clone();
+    let focus_controller = EventControllerFocus::new();
+    focus_controller.connect_leave(move |_controller| {
+      if w.config.launcher.hide_on_focus_lost {
+        w.window.hide();
       }
-      Propagation::Proceed
     });
-
-    let th = self.clone();
-    self
-      .window
-      .connect_key_press_event(move |_, k| th.connect_key_press_event(k));
+    self.window.add_controller(focus_controller);
+    let w = self.clone();
+    let key_controller = EventControllerKey::new();
+    key_controller.connect_key_pressed(move |controller, keyval, keycode, state| {
+        println!("Key pressed: keyval={} keycode={} state={:?}", keyval, keycode, state);
+        w.handle_key_press_event(controller, keyval, keycode, state);
+        Propagation::Proceed
+    });
+    self.window.add_controller(key_controller);
 
     let th = self.clone();
     input.connect_changed(move |entry| th.connect_changed(entry));

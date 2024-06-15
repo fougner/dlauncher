@@ -1,4 +1,4 @@
-use gtk::{
+use gtk4::{
   gdk_pixbuf::{Pixbuf, PixbufLoader},
   prelude::*,
 };

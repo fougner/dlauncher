@@ -1,10 +1,11 @@
 use std::path::Path;
 
-use gtk::{
-  gdk::SELECTION_CLIPBOARD,
+use gtk4::{
   glib::{spawn_async, SpawnFlags},
-  Clipboard,
+  gdk::prelude::DisplayExt
 };
+use gtk4::gdk::{Display};
+
 use libc::setsid;
 
 use crate::{
@@ -20,9 +21,9 @@ pub fn no_match() -> MatchingBlocks {
 /// Copy `text` to the clipboard.
 /// Requires gtk::set_initialized() to be called first if inside an extension.
 pub fn copy_to_clipboard(text: &str) {
-  let clipboard = Clipboard::get(&SELECTION_CLIPBOARD);
-  clipboard.set_text(text);
-  clipboard.store();
+  let display = Display::default().unwrap();
+  let cb = DisplayExt::primary_clipboard(&display);
+  cb.set_text(text);
 }
 
 /// Checks if `text` matches `comparison` using fuzzy search. The must_be parameter is used to

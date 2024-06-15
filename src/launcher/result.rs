@@ -1,4 +1,4 @@
-use gtk::{glib::Propagation::Proceed, prelude::*, Builder, Box as GtkBox, Image, Label};
+use gtk4::{prelude::*, Builder, Box as GtkBox, Image, Label, EventControllerMotion, GestureClick};
 
 use crate::{
   entry::ResultEntry,
@@ -63,7 +63,10 @@ impl ResultWidget {
     item_icon.set_from_pixbuf(Some(&entry.icon()));
 
     item_icon.set_pixel_size(40);
-    item_icon.set_margin(2);
+    item_icon.set_margin_start(2);
+    item_icon.set_margin_end(2);
+    item_icon.set_margin_top(2);
+    item_icon.set_margin_bottom(2);
     item_desc.set_text(entry.description());
 
     Self {
@@ -89,19 +92,19 @@ impl ResultWidget {
   }
 
   pub fn setup(&self) {
-    let item_box: GtkBox = self.builder.object("item-box").unwrap();
+    let _item_box: GtkBox = self.builder.object("item-box").unwrap();
     let result_notify = self.clone();
-    item_box.connect_enter_notify_event(move |_, e| {
-      if e.time() != 0 {
+
+    let controller = EventControllerMotion::new();
+
+    controller.connect_enter(move |_, _, _| {
         let mut navigation = result_notify.window.navigation.lock().unwrap();
         navigation.select(result_notify.index);
-      }
-
-      Proceed
     });
 
     let result_button = self.clone();
-    item_box.connect_button_release_event(move |_, _| {
+    let gesture_controller = GestureClick::new();
+    gesture_controller.connect_released(move |_, _, _, _| {
       let navigation = result_button.window.navigation.lock().unwrap();
 
       if let Some(selected) = navigation.selected {
@@ -117,8 +120,6 @@ impl ResultWidget {
           std::process::exit(0);
         }
       }
-
-      Proceed
     });
   }
 }

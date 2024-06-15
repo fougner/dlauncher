@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use gtk::{
+use gtk4::{
   gio::{AppInfo, DesktopAppInfo},
   glib::GString,
   prelude::*,
@@ -28,7 +28,7 @@ impl App {
         let icon = if a.icon().is_none() {
           None
         } else {
-          let st = gtk::prelude::IconExt::to_string(&a.icon().unwrap())
+          let st = gtk4::prelude::IconExt::to_string(&a.icon().unwrap())
             .unwrap()
             .to_string();
 

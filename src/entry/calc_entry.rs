@@ -1,9 +1,7 @@
-use gtk::{
+use gtk4::{
   gdk_pixbuf::{Pixbuf, PixbufLoader},
   prelude::*,
 };
-
-use crate::launcher::util::icon::load_icon;
 
 #[derive(Debug, Clone)]
 pub struct CalcEntry {
@@ -46,7 +44,7 @@ impl CalcEntry {
     loader
       .pixbuf()
       .unwrap()
-      .scale_simple(40, 40, gtk::gdk_pixbuf::InterpType::Bilinear)
+      .scale_simple(40, 40, gtk4::gdk_pixbuf::InterpType::Bilinear)
       .unwrap()
   }
 }

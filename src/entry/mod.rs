@@ -1,4 +1,4 @@
-use gtk::gdk_pixbuf::Pixbuf;
+use gtk4::gdk_pixbuf::Pixbuf;
 
 use crate::{
   extension::{config::ExtensionConfig, ExtensionContext},

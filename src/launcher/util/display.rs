@@ -1,22 +1,10 @@
-use gtk::gdk::{prelude::*, Display, Monitor};
-use gtk::gio::Settings;
+use gtk4::gdk::{prelude::*, Display, Monitor};
+use gtk4::gio::Settings;
 
 pub fn monitor() -> Monitor {
   let display = Display::default().unwrap();
-  if let Some(monitor) = display.primary_monitor() {
-    monitor
-  } else if let Some(monitor) = display.monitor(0) {
-    monitor
-  } else {
-    let seat = display.default_seat().unwrap();
-    let (_, x, y) = seat.pointer().unwrap().position();
-
-    if let Some(monitor) = display.monitor_at_point(x, y) {
-      monitor
-    } else {
-      panic!("Couldn't get monitor through various methods...")
-    }
-  }
+  let monitor = display.monitors().item(0);
+  monitor.expect("no monitors").downcast_ref::<Monitor>().unwrap().to_owned()
 }
 
 pub fn scaling_factor() -> f32 {

@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use gtk::gdk_pixbuf::Pixbuf;
+use gtk4::gdk_pixbuf::Pixbuf;
 use log::debug;
 
 use crate::{

@@ -1,25 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.2 -->
 <interface>
-  <requires lib="gtk+" version="3.22"/>
-  <!-- interface-local-resource-path ../media -->
+  <requires lib="gtk" version="4.0"/>
   <object class="GtkWindow" id="dlauncher_window">
-    <property name="can-focus">False</property>
-    <property name="has-focus">True</property>
+    <property name="has-focus">1</property>
     <property name="title">Dlauncher - Application Launcher</property>
-    <property name="resizable">False</property>
-    <property name="window-position">center</property>
+    <property name="resizable">0</property>
     <property name="icon-name">dlauncher</property>
-    <property name="skip-taskbar-hint">True</property>
-    <property name="skip-pager-hint">True</property>
-    <property name="urgency-hint">True</property>
-    <property name="decorated">False</property>
-    <property name="deletable">False</property>
-    <child>
+    <property name="decorated">0</property>
+    <property name="deletable">0</property>
+    <property name="child">
       <object class="GtkBox" id="body">
-        <property name="visible">True</property>
-        <property name="app-paintable">True</property>
-        <property name="can-focus">False</property>
         <property name="margin-start">20</property>
         <property name="margin-end">20</property>
         <property name="margin-top">20</property>
@@ -27,17 +17,13 @@
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkBox" id="input-box">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
             <child>
               <object class="GtkEntry" id="input">
+                <property name="hexpand">1</property>
                 <property name="height-request">30</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="has-focus">True</property>
-                <property name="is-focus">True</property>
-                <property name="can-default">True</property>
-                <property name="receives-default">True</property>
+                <property name="focusable">1</property>
+                <property name="has-focus">1</property>
+                <property name="receives-default">1</property>
                 <property name="margin-start">20</property>
                 <property name="margin-end">20</property>
                 <property name="margin-top">15</property>
@@ -46,54 +32,33 @@
                   <class name="input"/>
                 </style>
               </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
             </child>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
         </child>
         <child>
           <object class="GtkScrolledWindow" id="result_box_scroll_container">
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
+            <property name="focusable">1</property>
             <property name="hscrollbar-policy">never</property>
-            <property name="shadow-type">in</property>
             <property name="max-content-height">500</property>
-            <property name="propagate-natural-height">True</property>
-            <child>
+            <property name="propagate-natural-height">1</property>
+            <property name="child">
               <object class="GtkViewport" id="result_box_viewport">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <child>
+                <property name="child">
                   <object class="GtkBox" id="result_box">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
                     <property name="orientation">vertical</property>
                     <style>
                       <class name="result-box"/>
                     </style>
                   </object>
-                </child>
+                </property>
               </object>
-            </child>
+            </property>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
         </child>
         <style>
           <class name="app"/>
         </style>
       </object>
-    </child>
+    </property>
   </object>
 </interface>

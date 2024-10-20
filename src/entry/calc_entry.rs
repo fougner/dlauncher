@@ -1,7 +1,6 @@
-use gtk4::{
-  gdk_pixbuf::{Pixbuf, PixbufLoader},
-  prelude::*,
-};
+use gtk4::{CellRendererPixbuf, gdk_pixbuf::{Pixbuf, PixbufLoader}, IconPaintable, Image, prelude::*};
+use gtk4::builders::{ImageBuilder, PictureBuilder};
+use gtk4::gdk::Surface;
 
 #[derive(Debug, Clone)]
 pub struct CalcEntry {
@@ -37,14 +36,16 @@ impl CalcEntry {
     &self.calc.query
   }
 
-  pub fn icon(&self) -> Pixbuf {
+  pub fn icon(&self) -> IconPaintable {
+
     let loader = PixbufLoader::new();
     loader.write(CALC_IMG.as_bytes()).unwrap();
     loader.close().unwrap();
-    loader
-      .pixbuf()
-      .unwrap()
-      .scale_simple(40, 40, gtk4::gdk_pixbuf::InterpType::Bilinear)
-      .unwrap()
+    let pb = loader
+      .pixbuf();
+
+    let mut im = Image::new();
+    Image::set_from_pixbuf(&im, pb.as_ref());
+    im.paintable().unwrap().downcast::<IconPaintable>().unwrap()
   }
 }

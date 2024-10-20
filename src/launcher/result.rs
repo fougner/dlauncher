@@ -60,7 +60,7 @@ impl ResultWidget {
 
     item_name.set_markup(&name_c);
 
-    item_icon.set_from_pixbuf(Some(&entry.icon()));
+    item_icon.set_from_paintable(Some(&entry.icon()));
 
     item_icon.set_pixel_size(40);
     item_icon.set_margin_start(2);

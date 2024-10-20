@@ -1,9 +1,10 @@
 use gtk4::gdk_pixbuf::Pixbuf;
+use gtk4::IconPaintable;
 
 use crate::{
   extension::{config::ExtensionConfig, ExtensionContext},
   launcher::{
-    util::{config::Config, icon::default_pixbuf},
+    util::{config::Config},
     window::Window,
   },
 };
@@ -43,13 +44,13 @@ impl ResultEntry {
     }
   }
 
-  pub fn icon(&self) -> Pixbuf {
+  pub fn icon(&self) -> IconPaintable {
     match self {
       ResultEntry::App(app) => app.icon(),
       ResultEntry::Extension(ext) => ext.icon(),
       ResultEntry::Script(script) => script.icon(),
       ResultEntry::Calc(calc) => calc.icon(),
-      ResultEntry::None => default_pixbuf(40),
+      ResultEntry::None => panic!("uh"),
     }
   }
 

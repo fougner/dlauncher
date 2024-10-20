@@ -1,9 +1,6 @@
 use std::fmt;
 
-use gtk4::{
-  gdk_pixbuf::{Pixbuf, PixbufLoader},
-  prelude::*,
-};
+use gtk4::{gdk_pixbuf::{Pixbuf, PixbufLoader}, IconPaintable, prelude::*};
 
 use crate::{
   extension::response::{
@@ -31,15 +28,15 @@ impl ExtensionEntry {
     }
   }
 
-  pub fn icon(&self) -> Pixbuf {
+  pub fn icon(&self) -> IconPaintable {
     match self.icon.type_ {
       ExtensionResponseIconType::ThemedIcon => load_icon(&self.icon.value, 40),
       ExtensionResponseIconType::SVGStringIcon => {
-        let loader = PixbufLoader::new();
+        /*let loader = PixbufLoader::new();
         loader.write(self.icon.value.as_bytes()).unwrap();
         loader.close().unwrap();
-
-        loader.pixbuf().unwrap()
+        loader.pixbuf().unwrap()*/
+        panic!("oh no")
       }
     }
   }

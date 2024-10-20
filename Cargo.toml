@@ -36,6 +36,7 @@ gtk4 = "0.8.2"
 gio = "0.19.5"
 blocking = "1.6.1"
 zbus = "4.2.2"
+bytes = "1.6.0"
 
 [profile.release]
 strip = true

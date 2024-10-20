@@ -1,11 +1,11 @@
 use std::path::PathBuf;
 
-use gtk4::gdk_pixbuf::Pixbuf;
+use gtk4::IconPaintable;
 use log::debug;
 
 use crate::{
   launcher::{
-    util::{icon::default_pixbuf, recent::Recent},
+    util::{recent::Recent},
     window::Window,
   },
   util::launch_detached,
@@ -16,7 +16,7 @@ pub struct AppEntry {
   pub name: String,
   pub description: String,
   pub file: PathBuf,
-  pub icon: Option<Pixbuf>,
+  pub icon: Option<IconPaintable>,
   pub exec: Vec<String>,
   pub terminal: bool,
 }
@@ -53,10 +53,10 @@ impl AppEntry {
     Recent::recents_to_file(recents.to_vec(), &window.config.recents());
   }
 
-  pub fn icon(&self) -> Pixbuf {
+  pub fn icon(&self) -> IconPaintable {
     match &self.icon {
       Some(icon) => icon.clone(),
-      None => default_pixbuf(40),
+      None => panic!("ooh no")
     }
   }
 }

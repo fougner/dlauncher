@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.40.0 -->
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <requires lib="gtk+" version="3.0"/>
+  <object class="GtkWindow" id="dlauncher_window">
+    <property name="can-focus">False</property>
+    <property name="has-focus">True</property>
+    <property name="title">Dlauncher - Application Launcher</property>
+    <property name="resizable">False</property>
+    <property name="icon-name">dlauncher</property>
+    <property name="decorated">False</property>
+    <property name="deletable">False</property>
+    <child>
+      <object class="GtkTreeView">
+        <property name="visible">True</property>
+        <property name="can-focus">True</property>
+        <child internal-child="selection">
+          <object class="GtkTreeSelection"/>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

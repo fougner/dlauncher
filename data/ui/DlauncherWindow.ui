@@ -2,7 +2,6 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <object class="GtkWindow" id="dlauncher_window">
-    <property name="has-focus">1</property>
     <property name="title">Dlauncher - Application Launcher</property>
     <property name="resizable">0</property>
     <property name="icon-name">dlauncher</property>
@@ -22,7 +21,6 @@
                 <property name="hexpand">1</property>
                 <property name="height-request">30</property>
                 <property name="focusable">1</property>
-                <property name="has-focus">1</property>
                 <property name="receives-default">1</property>
                 <property name="margin-start">20</property>
                 <property name="margin-end">20</property>

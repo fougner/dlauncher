@@ -19,35 +19,35 @@ impl App {
 
     let re = Regex::new(r"%[uUfFdDnNickvm]").unwrap();
 
-    for a in AppInfo::all() {
-      if !a.should_show() {
+    for app in AppInfo::all() {
+      if !app.should_show() {
         continue;
       }
 
-      if let Some(exec) = a.commandline() {
-        let icon = if a.icon().is_none() {
+      if let Some(exec) = app.commandline() {
+        let icon = if app.icon().is_none() {
           None
         } else {
-          let st = gtk4::prelude::IconExt::to_string(&a.icon().unwrap())
+          let st = gtk4::prelude::IconExt::to_string(&app.icon().unwrap())
             .unwrap()
             .to_string();
 
           Some(load_icon(&st, 40))
         };
 
-        if let Some(file) = a.id() {
+        if let Some(file) = app.id() {
           let exec: Vec<String> =
             shell_words::split(&*re.replace(&*exec.display().to_string(), "")).unwrap();
 
-          let terminal = if let Some(desktop) = DesktopAppInfo::new(&a.id().unwrap()) {
+          let terminal = if let Some(desktop) = DesktopAppInfo::new(&app.id().unwrap()) {
             desktop.boolean("Terminal")
           } else {
             false
           };
 
           results.push(AppEntry {
-            name: a.display_name().to_string(),
-            description: a
+            name: app.display_name().to_string(),
+            description: app
               .description()
               .unwrap_or_else(|| GString::from(""))
               .to_string(),

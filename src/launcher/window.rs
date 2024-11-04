@@ -410,7 +410,7 @@ impl Window {
   fn connect_changed(&self, input: &Entry) {
     let text = input.text();
     let text = text.trim_start();
-    input.set_text(text);
+    //input.set_text(text);
 
     let mut results = Vec::new();
 

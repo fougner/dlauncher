@@ -32,6 +32,8 @@ fn main() {
       windows.window.show();
       info!("Running in non-daemon mode");
     }
+
+    windows.window.show();
   });
 
   application.run();

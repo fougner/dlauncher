@@ -37,7 +37,7 @@ impl ScriptEntry {
         loader.close().unwrap();
         let pb = loader.pixbuf();
 
-        let mut im = Image::new();
+        let im = Image::new();
         Image::set_from_pixbuf(&im, pb.as_ref());
         im.paintable().unwrap().downcast::<IconPaintable>().unwrap()
 

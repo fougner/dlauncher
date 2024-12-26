@@ -7,7 +7,7 @@ use gtk4::{
 use gtk4::gdk::{Display};
 
 use libc::setsid;
-
+use log::debug;
 use crate::{
   entry::app_entry::AppEntry,
   fuzzy::{get_matching_blocks, get_score, MatchingBlocks},
@@ -44,6 +44,9 @@ pub fn matches_app(
   query: &str,
   min_score: usize,
 ) -> Option<(MatchingBlocks, usize)> {
+  debug!("matches_app() app={} desc={}", app.name, app.description);
+
+
   let app_score = get_score(query, &app.name);
   let score = vec![
     app_score as f64,

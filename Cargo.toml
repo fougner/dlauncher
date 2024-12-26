@@ -17,6 +17,10 @@ path = "src/dlauncher.rs"
 name = "dlauncher-toggle"
 path = "src/dlauncher-toggle.rs"
 
+[[bin]]
+name = "benchmark"
+path = "src/benchmark.rs"
+
 [dependencies]
 gtk = { version = "0.18.1", features = ["v3_24"] }
 dbus = "0.9.5"
@@ -35,6 +39,10 @@ fasteval = "0.2.4"
 gtk4 = "0.9.5"
 gio = "0.20.7"
 async-channel = "2.3.1"
+brunch = "0.8.0"
+fuzzy-matcher = "0.3.7"
+nucleo = "0.5.0"
+
 
 [profile.release]
 strip = true

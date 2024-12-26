@@ -74,7 +74,7 @@ fn schedule_toggle(window: Window) {
     debug!("spawn_local for main context");
     while let Ok(command) = rx.recv().await {
       if command {
-        debug!("Received message from dbus interface, showing window.");
+        debug!("Received message from dbus interface, toggling window.");
         window.toggle_window();
       }
     }

@@ -1,12 +1,12 @@
 use std::sync::{Arc, Mutex};
 
-use gtk4::glib::{idle_add_local, ControlFlow, Propagation, clone};
+use gtk4::glib::{Propagation};
 use gtk4::{gdk::{prelude::*}, prelude::*, Builder, Entry, Box as GtkBox, ScrolledWindow, Window as GtkWindow, EventControllerFocus, EventControllerKey, gdk};
 use gtk4::gdk::Display;
-use log::{debug, error};
+use log::{debug, error, trace};
 
 use crate::entry::calc_entry::CalcEntry;
-use crate::fuzzy::get_matching_blocks;
+use crate::fuzzy::{get_matching_blocks};
 use crate::{
   entry::{app_entry::AppEntry, script_entry::ScriptEntry, ResultEntry},
   extension::{Extension, ExtensionExitCode},
@@ -203,10 +203,10 @@ impl Window {
 
   pub fn hide_window(&self) {
     self.window.hide();
-
+/*
     let state = self.state.clone();
     let config_recents = self.config.recents();
-/*
+
     idle_add_local(move || {
       let mut apps = state.apps.lock().unwrap();
       let mut recents = state.recents.lock().unwrap();
@@ -304,8 +304,6 @@ impl Window {
 
     result_box.set_margin_top(3);
     result_box.set_margin_bottom(10);
-
-    //let _scroll_box: ScrolledWindow = self.builder.object("result_box_scroll_container").unwrap();
   }
 
   fn add_to_results(&self, apps: &Vec<ResultWidget>) {
@@ -357,7 +355,7 @@ impl Window {
         );
       }
 
-      //let _scroll_box: ScrolledWindow = self.builder.object("result_box_scroll_container").unwrap();
+      let _scroll_box: ScrolledWindow = self.builder.object("result_box_scroll_container").unwrap();
     }
   }
 
@@ -413,8 +411,6 @@ impl Window {
   fn connect_changed(&self, input: &Entry) {
     let rawquery = input.text();
     let query = rawquery.trim_start();
-    //input.set_text(text);
-    debug!("connect_changed() inputtext={:?}", query);
 
     let mut results = Vec::new();
 
@@ -424,14 +420,13 @@ impl Window {
       let mut unsort = Vec::new();
       let apps = self.state.apps.lock().unwrap();
       for app in apps.iter() {
-        if let Some((match_, score)) = matches_app(app, query, self.config.main.least_score) {
+        if let Some((match_, score)) = matches_app(app, query, self.config.main.least_score, None) {
           unsort.push((ResultEntry::App(app.clone()), self.clone(), match_, score));
         }
       }
 
       let mut ns = fasteval::EmptyNamespace;
       if let Ok(evaluated) = fasteval::ez_eval(query, &mut ns) {
-        debug!("Ok mathresult {}: {}", query, evaluated);
         let entry = ResultEntry::Calc(CalcEntry::new_from_result(query.to_string(), evaluated));
         let res = evaluated.to_string();
         let res = res.as_str();
@@ -470,11 +465,8 @@ impl Window {
       self.show_results(results, true);
 
       for ext in &self.extensions {
-        match ext.on_input(query) {
-          ExtensionExitCode::Error(err) => {
-            error!("[{}] An error occurred on `on_input`: {}", ext.name, err)
-          }
-          _ => {}
+        if let ExtensionExitCode::Error(err) = ext.on_input(query) {
+          error!("[{}] An error occurred on `on_input`: {}", ext.name, err)
         }
       }
     }
@@ -507,60 +499,5 @@ impl Window {
 
     let th = self.clone();
     input.connect_changed(move |entry| th.connect_changed(entry));
-  }
-}
-
-#[cfg(test)]
-mod tests {
-  use std::hint::black_box;
-  use brunch::{Bench, Benches};
-  use super::*;
-
-  #[test]
-  fn bench_matches_app() {
-
-    let min_score =60;
-
-    let apps=  App::all();
-
-    let mut nucleo = nucleo::Matcher::new(nucleo::Config::DEFAULT.match_paths());
-    let skim = fuzzy_matcher::skim::SkimMatcherV2::default();
-
-    // TODO: unicode?
-    let needles = ["firefoxkkkkkkkkkkkkkkkkkkkkkkkk", "firfx"];
-    // Announce that we've started.
-    ::std::eprint!("\x1b[1;38;5;199mStarting:\x1b[0m Running benchmark(s). Stand by!\n\n");
-    let mut benches = Benches::default();
-    // let mut scores = Vec::with_capacity(paths.0.len());
-    for needle in needles {
-      println!("running {needle:?}...");
-      benches.push(Bench::new(format!("nucleo {needle:?}")).run(|| {
-
-        let mut unsort = Vec::new();
-        for app in apps.iter() {
-          let appname = app.name.clone();
-          if let Some((match_, score)) = black_box(matches_app(app, needle, min_score)) {
-            unsort.push((appname, match_, score));
-          }
-        }
-        // scores.clear();
-        // scores.extend(paths.0.iter().filter_map(|haystack| {
-        /*for haystack in &paths.0 {
-            black_box(
-                nucleo.fuzzy_match(haystack.slice(..), Utf32Str::Ascii(needle.as_bytes())),
-            );
-        }*/
-        // }));
-        // scores.sort_unstable();
-      }));
-      /*benches.push(Bench::new(format!("skim {needle:?}")).run(|| {
-          for haystack in &paths.1 {
-              let res = skim.fuzzy_match(haystack, needle);
-              let _ = black_box(res);
-          }
-      }));*/
-    }
-    benches.finish();
-
   }
 }

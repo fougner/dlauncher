@@ -8,7 +8,7 @@ use dlauncher::{
   util::init_logger,
 };
 
-use log::{debug, info};
+use log::{debug, info, warn};
 
 static PKG_VERSION: &str = env!("CARGO_PKG_VERSION");
 static APP_ID: &str = "net.launchpad.dlauncher";
@@ -58,8 +58,9 @@ fn schedule_toggle(window: Window) {
           (),
           (),
           move |_: &mut Context, thread_tx, (): ()| {
-            debug!("send_blocking");
-            thread_tx.send_blocking(true);
+            if thread_tx.send_blocking(true).is_err() {
+              warn!("error sending message");
+            }
             Ok(())
           },
         );

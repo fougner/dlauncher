@@ -47,7 +47,7 @@ impl ResultWidget {
         [
           slice_utf8(&name_c, 0, *index),
           &open_tag,
-          &chars,
+          chars,
           close_tag,
           slice_utf8(
             &name_c,

@@ -54,7 +54,7 @@ impl Theme {
   }
 
   pub fn compile_css(&self) -> PathBuf {
-    let css_file = self.path().join(&self.css_file());
+    let css_file = self.path().join(self.css_file());
 
     if let Some(extend_theme) = &self.inner.extend_theme {
       let generated_css = self.path().join("generated.css");

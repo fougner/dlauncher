@@ -107,8 +107,8 @@ impl Config {
       create_dir_all(&config_path).unwrap();
 
       let default = Self::default();
-      let bytes = toml::to_vec(&default).unwrap();
-      write(&abs_config_path, bytes).unwrap();
+      let pretty = toml::to_string_pretty(&default).unwrap();
+      write(&abs_config_path, pretty).unwrap();
 
       info!(
         "There was no config file found. A default config file has been created at {:#?}",
@@ -117,8 +117,8 @@ impl Config {
 
       default
     } else {
-      let bytes = read(abs_config_path).unwrap();
-      toml::from_slice(&bytes).unwrap()
+      let string = std::fs::read_to_string(abs_config_path).unwrap();
+      toml::from_str(&string).unwrap()
     };
 
     if first {
@@ -167,8 +167,8 @@ impl Config {
   pub fn setup(&self) {
     let theme_path = self.themes_dir().join("light");
     create_dir_all(&theme_path).unwrap();
-    create_dir_all(&self.dir().join("extensions")).unwrap();
-    create_dir_all(&self.dir().join("scripts")).unwrap();
+    create_dir_all(self.dir().join("extensions")).unwrap();
+    create_dir_all(self.dir().join("scripts")).unwrap();
 
     // Copies over default theme.
     let default_manifest = include_bytes!("../../../data/themes/light/manifest.json");
@@ -176,10 +176,10 @@ impl Config {
     let default_themegtk = include_bytes!("../../../data/themes/light/theme-gtk-3.20.css");
     let default_resetcss = include_bytes!("../../../data/themes/light/reset.css");
 
-    write(&theme_path.join("manifest.json"), default_manifest).unwrap();
-    write(&theme_path.join("theme.css"), default_themecss).unwrap();
-    write(&theme_path.join("theme-gtk-3.20.css"), default_themegtk).unwrap();
-    write(&theme_path.join("reset.css"), default_resetcss).unwrap();
+    write(theme_path.join("manifest.json"), default_manifest).unwrap();
+    write(theme_path.join("theme.css"), default_themecss).unwrap();
+    write(theme_path.join("theme-gtk-3.20.css"), default_themegtk).unwrap();
+    write(theme_path.join("reset.css"), default_resetcss).unwrap();
   }
 
   pub fn recents(&self) -> PathBuf {

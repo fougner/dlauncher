@@ -1,8 +1,5 @@
-use gtk4::{CellRendererPixbuf, gdk_pixbuf::{Pixbuf, PixbufLoader}, IconPaintable, Image, prelude::*};
-use gtk4::builders::{ImageBuilder, PictureBuilder};
-use gtk4::gdk::Surface;
+use gtk4::{IconPaintable};
 use gtk4::gdk;
-use gtk4::prelude::*;
 
 #[derive(Debug, Clone)]
 pub struct CalcEntry {
@@ -15,8 +12,6 @@ pub struct Calc {
   pub result: String,
 }
 
-static CALC_IMG: &str = include_str!("../../data/icons/calculator.xpm");
-
 impl CalcEntry {
   pub fn new(calc: Calc) -> Self {
     Self { calc }
@@ -24,7 +19,7 @@ impl CalcEntry {
   pub fn new_from_result(query: String, result: f64) -> Self {
     Self {
       calc: Calc {
-        query: query,
+        query,
         result: result.to_string(),
       },
     }

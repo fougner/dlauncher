@@ -22,7 +22,7 @@ pub struct Recent {
 impl Recent {
   pub fn all(path: &PathBuf) -> Vec<Recent> {
     debug!("Fetching recent apps");
-    let file = File::open(&path);
+    let file = File::open(path);
     let mut recents: Vec<Recent> = vec![];
     if let Ok(file) = file {
       let lines = BufReader::new(&file).lines();
@@ -37,7 +37,7 @@ impl Recent {
       }
       file.sync_all().unwrap();
     } else {
-      write(&path, "").unwrap();
+      write(path, "").unwrap();
     }
     debug!("Recent apps refreshed");
 
@@ -52,7 +52,7 @@ impl Recent {
       .map(|r| format!("{} {}", r.num, r.file.to_str().unwrap()))
       .collect::<Vec<String>>()
       .join("\n");
-    write(&path, st).unwrap();
+    write(path, st).unwrap();
   }
 
   pub fn to_result(&self, window: Window, apps: Arc<Mutex<Vec<AppEntry>>>) -> Option<ResultWidget> {

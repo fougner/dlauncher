@@ -3,8 +3,8 @@
 
 pub fn slice_utf8(string: &str, low: usize, high: usize) -> &str {
   let char_count = string.chars().count();
-  debug_assert!(!(low > high));
-  debug_assert!(!(high > char_count));
+  debug_assert!(low <= high);
+  debug_assert!(high <= char_count);
   if low == high {
     return "";
   }
@@ -41,7 +41,7 @@ pub(crate) fn find_longest_match<'a>(
   let slen = high1 - low1;
   for size in (1..slen + 1).rev() {
     for start in 0..slen - size + 1 {
-      let substr = slice_utf8(&shorter, low1 + start, low1 + start + size);
+      let substr = slice_utf8(shorter, low1 + start, low1 + start + size);
       if let Some((startb, matchstr)) = longsub.match_indices(substr).next() {
         return (
           low1 + start,

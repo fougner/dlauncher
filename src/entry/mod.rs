@@ -1,4 +1,3 @@
-use gtk4::gdk_pixbuf::Pixbuf;
 use gtk4::IconPaintable;
 
 use crate::{

@@ -1,3 +1,4 @@
+use std::any::Any;
 use std::path::Path;
 
 use gtk4::{
@@ -10,9 +11,10 @@ use libc::setsid;
 use log::debug;
 use crate::{
   entry::app_entry::AppEntry,
-  fuzzy::{get_matching_blocks, get_score, MatchingBlocks},
+  fuzzy::{get_matching_blocks, get_score_standard, MatchingBlocks, MatcherAlgo},
   script::Script,
 };
+use crate::launcher::util::app::App;
 
 pub fn no_match() -> MatchingBlocks {
   (vec![], 0)
@@ -29,7 +31,7 @@ pub fn copy_to_clipboard(text: &str) {
 /// Checks if `text` matches `comparison` using fuzzy search. The must_be parameter is used to
 /// determine what the least text of the match should be.
 pub fn matches(query: &str, text: &str, min_score: usize) -> Option<MatchingBlocks> {
-  let score = get_score(query, text);
+  let score = get_score_standard(query, text);
 
   if score >= min_score {
     Some(get_matching_blocks(query, text))
@@ -43,15 +45,16 @@ pub fn matches_app(
   app: &AppEntry,
   query: &str,
   min_score: usize,
+  algorithm: Option<MatcherAlgo>
 ) -> Option<(MatchingBlocks, usize)> {
-  debug!("matches_app() app={} desc={}", app.name, app.description);
 
+  let ranker = algorithm.unwrap_or(MatcherAlgo::Skim);
 
-  let app_score = get_score(query, &app.name);
+  let app_score = ranker.get_score(query, &app.name);
   let score = vec![
     app_score as f64,
-    get_score(query, &shell_words::join(&app.exec)) as f64 * 0.8,
-    get_score(query, &app.description) as f64 * 0.7,
+    ranker.get_score(query, &shell_words::join(&app.exec)) as f64 * 0.8,
+    ranker.get_score(query, &app.description) as f64 * 0.7,
   ]
   .into_iter()
   .map(|x| x as usize)
@@ -65,16 +68,18 @@ pub fn matches_app(
   }
 }
 
+// let nucleo = nucleo::Matcher::new(nucleo::Config::DEFAULT);
+
 /// Checks if a user's query matches a scripts description and name.
 pub fn matches_script(
   script: &Script,
   query: &str,
   min_score: usize,
 ) -> Option<(MatchingBlocks, usize)> {
-  let script_score = get_score(query, &script.meta.name);
+  let script_score = get_score_standard(query, &script.meta.name);
   let score = vec![
     script_score as f64,
-    get_score(query, &script.meta.desc) as f64 * 0.7,
+    get_score_standard(query, &script.meta.desc) as f64 * 0.7,
   ]
   .into_iter()
   .map(|x| x as usize)
@@ -198,4 +203,36 @@ pub fn xdg_open(args: Vec<&str>, spawn_env_extra: Vec<&str>) {
   spawn_args.extend(args);
 
   launch_detached(spawn_args, spawn_env_extra);
+}
+
+
+
+#[cfg(test)]
+mod tests {
+
+  use super::*;
+  #[test]
+  fn test_match_algorithm_skim() {
+    gtk4::init().expect("Failed to initialize gtk");
+    let min_score = 60;
+
+    let apps = App::all();
+
+    for app in apps.iter() {
+      let s = app.clone().name;
+      if s.contains("Firefox") {
+
+        let rawscore = MatcherAlgo::Skim.get_score("firefox", &app.name);
+        println!("total {rawscore:?}");
+        assert!(rawscore > 50);
+        if let Some((_mb, score)) = matches_app(app, "firfox", min_score, Some(MatcherAlgo::Skim)) {
+          println!("firefox matches for skim algo: {:?}", score);
+          assert!(score > 50);
+        } else {
+          assert!(false, "firefox doesn't match skim algo");
+        }
+
+      }
+    }
+  }
 }

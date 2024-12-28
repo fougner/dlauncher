@@ -1,4 +1,4 @@
-use gtk4::{gdk_pixbuf::{Pixbuf, PixbufLoader}, IconPaintable, Image, prelude::*};
+use gtk4::{gdk_pixbuf::PixbufLoader, IconPaintable, Image, prelude::*};
 
 use crate::{
   launcher::util::icon::load_icon,
@@ -23,13 +23,13 @@ impl ScriptEntry {
     &self.script.meta.desc
   }
 
-  pub fn run(&self) -> () {
+  pub fn run(&self) {
     self.script.run();
   }
 
   pub fn icon(&self) -> IconPaintable {
     match &self.script.meta.icon {
-      ScriptIcon::Themed(value) => load_icon(&value, 40),
+      ScriptIcon::Themed(value) => load_icon(value, 40),
       ScriptIcon::Svg(value) => {
 
         let loader = PixbufLoader::new();

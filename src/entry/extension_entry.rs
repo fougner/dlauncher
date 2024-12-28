@@ -1,6 +1,6 @@
 use std::fmt;
 
-use gtk4::{gdk_pixbuf::{Pixbuf, PixbufLoader}, IconPaintable, prelude::*};
+use gtk4::{IconPaintable};
 
 use crate::{
   extension::response::{

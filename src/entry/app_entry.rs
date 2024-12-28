@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use gtk4::{IconPaintable, Image};
+use gtk4::IconPaintable;
 use log::debug;
 
 use crate::{

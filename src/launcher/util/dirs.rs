@@ -8,6 +8,12 @@ pub struct Dirs {
   pub themes: PathBuf,
 }
 
+impl Default for Dirs {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Dirs {
   pub fn new() -> Dirs {
     let home = env::var("HOME").expect("homeless");

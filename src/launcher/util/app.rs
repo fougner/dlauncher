@@ -9,6 +9,7 @@ use log::debug;
 use regex::Regex;
 
 use crate::{entry::app_entry::AppEntry, launcher::util::icon::load_icon};
+use crate::launcher::util::icon::load_gicon;
 
 pub struct App;
 
@@ -28,16 +29,16 @@ impl App {
         let icon = if app.icon().is_none() {
           None
         } else {
-          let st = gtk4::prelude::IconExt::to_string(&app.icon().unwrap())
+          let st = IconExt::to_string(&app.icon().unwrap())
             .unwrap()
             .to_string();
 
-          Some(load_icon(&st, 40))
+          Some(load_gicon(app.icon().unwrap(), 64))
         };
 
         if let Some(file) = app.id() {
           let exec: Vec<String> =
-            shell_words::split(&*re.replace(&*exec.display().to_string(), "")).unwrap();
+            shell_words::split(&re.replace(&exec.display().to_string(), "")).unwrap();
 
           let terminal = if let Some(desktop) = DesktopAppInfo::new(&app.id().unwrap()) {
             desktop.boolean("Terminal")

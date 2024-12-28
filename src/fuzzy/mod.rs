@@ -1,5 +1,6 @@
 use std::cmp::max;
-
+use fuzzy_matcher::FuzzyMatcher;
+use fuzzy_matcher::skim::SkimScoreConfig;
 use self::util::find_longest_match;
 pub use self::util::slice_utf8;
 
@@ -75,7 +76,7 @@ pub fn get_matching_blocks(a: &str, b: &str) -> MatchingBlocks {
   (output, total_len)
 }
 
-pub fn get_score(a: &str, b: &str) -> usize {
+pub fn get_score_standard(a: &str, b: &str) -> usize {
   let a_len = a.chars().count();
   let b_len = b.chars().count();
   let max_len = max(a_len, b_len);
@@ -95,3 +96,55 @@ pub fn get_score(a: &str, b: &str) -> usize {
 
   score.round() as usize
 }
+
+#[derive(Debug, Clone)]
+pub enum MatcherAlgo {
+  Exact,
+  Simple,
+  Skim,
+}
+
+impl MatcherAlgo {
+  pub fn get_score(&self, query: &str, text: &str) -> usize {
+    match self {
+      MatcherAlgo::Exact => get_score_exact(query, text),
+      MatcherAlgo::Simple => get_score_standard(query, text),
+      MatcherAlgo::Skim => get_score_skim(query, text),
+    }
+  }
+}
+
+fn get_score_skim(query: &str, text: &str) -> usize {
+  //let nucleo = nucleo::Matcher::new(nucleo::Config::DEFAULT);
+  //nucleo.fuzzy_match()
+  let score_match = 16;
+  let gap_start = -3;
+  let gap_extension = -1;
+
+  let skim_config = SkimScoreConfig {
+    score_match,
+    gap_start,
+    gap_extension: -1,
+    bonus_first_char_multiplier: 10,
+    bonus_head: score_match / 2,
+    bonus_break: score_match / 2 + gap_extension,
+    bonus_camel: score_match / 2 + 2 * gap_extension,
+    bonus_consecutive: -(gap_start + gap_extension),
+    penalty_case_mismatch: gap_extension * 2,
+  };
+  let skim = fuzzy_matcher::skim::SkimMatcherV2::default().score_config(skim_config);
+  let s = skim.fuzzy_match(text, query);
+
+  s.unwrap_or_default().unsigned_abs() as usize
+}
+
+// Example scoring functions for demonstration purposes
+pub fn get_score_exact(query: &str, text: &str) -> usize {
+  if query == text {
+    100
+  } else {
+    0
+    //query.len().min(text.len()) * 10
+  }
+}
+

@@ -7,7 +7,7 @@ use dlauncher::launcher::util::app::App;
 use dlauncher::util::matches_app;
 
 
-fn main() -> () {
+fn main() {
 
     gtk4::init().expect("Failed to initialize gtk");
     let min_score =60;

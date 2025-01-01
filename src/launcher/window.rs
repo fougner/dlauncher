@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 use gtk4::glib::{Propagation};
 use gtk4::{gdk::{prelude::*}, prelude::*, Builder, Entry, Box as GtkBox, ScrolledWindow, Window as GtkWindow, EventControllerFocus, EventControllerKey, gdk};
 use gtk4::gdk::Display;
-use log::{debug, error, trace};
+use log::{debug, error};
 
 use crate::entry::calc_entry::CalcEntry;
 use crate::fuzzy::{get_matching_blocks};

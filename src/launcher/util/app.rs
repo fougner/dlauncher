@@ -8,7 +8,7 @@ use gtk4::{
 use log::debug;
 use regex::Regex;
 
-use crate::{entry::app_entry::AppEntry, launcher::util::icon::load_icon};
+use crate::entry::app_entry::AppEntry;
 use crate::launcher::util::icon::load_gicon;
 
 pub struct App;

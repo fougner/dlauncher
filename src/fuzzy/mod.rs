@@ -117,20 +117,20 @@ impl MatcherAlgo {
 fn get_score_skim(query: &str, text: &str) -> usize {
   //let nucleo = nucleo::Matcher::new(nucleo::Config::DEFAULT);
   //nucleo.fuzzy_match()
-  let score_match = 16;
+  let score_match = 32;
   let gap_start = -3;
   let gap_extension = -1;
 
   let skim_config = SkimScoreConfig {
     score_match,
     gap_start,
-    gap_extension: -1,
-    bonus_first_char_multiplier: 10,
-    bonus_head: score_match / 2,
-    bonus_break: score_match / 2 + gap_extension,
+    gap_extension: -2,
+    bonus_first_char_multiplier: 6,
+    bonus_head: score_match,
+    bonus_break: score_match / 2 + gap_extension + 1,
     bonus_camel: score_match / 2 + 2 * gap_extension,
     bonus_consecutive: -(gap_start + gap_extension),
-    penalty_case_mismatch: gap_extension * 2,
+    penalty_case_mismatch: gap_extension,
   };
   let skim = fuzzy_matcher::skim::SkimMatcherV2::default().score_config(skim_config);
   let s = skim.fuzzy_match(text, query);
